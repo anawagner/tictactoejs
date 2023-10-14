@@ -1,0 +1,26 @@
+.gameBoard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  border: 1px solid black;
+}
+
+.cell {
+  font-size: 4em;
+  text-align: center;
+  line-height: 100px;
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+/* Style the X and O symbols */
+.cell.x::before {
+  content: "X";
+}
+
+s .cell.o::before {
+  content: "O";
+}
