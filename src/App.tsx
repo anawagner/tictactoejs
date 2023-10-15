@@ -8,10 +8,7 @@ function App() {
     <>
       <Header />
       <main>
-        <div className="container">
-
-          <GameBoard />
-        </div>
+        <GameBoard />
       </main>
     </>
   )
