@@ -88,7 +88,7 @@ const minimax_alpha_beta = (
   beta: number = Infinity,
 ) => {
   const winner = checkWinner(board);
-  if (depth === 0 || winner !== Values.empty) {
+  if (depth <= 0 || winner !== Values.empty) {
     return score(winner);
   }
 

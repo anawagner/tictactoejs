@@ -52,7 +52,6 @@ const GameBoard = () => {
       }
     }
     // make the best move
-    console.log('best move: ', bestMove);
     if (bestMove) {
       makeMove(bestMove.x, bestMove.y, Values.o);
     } else {
