@@ -3,7 +3,8 @@ import React from "react";
 enum Values {
   x = 'x',
   o = 'o',
-  empty = 0
+  empty = 0,
+  tie = -1
 }
 
 type CellProps = {

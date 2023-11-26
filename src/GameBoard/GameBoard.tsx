@@ -1,8 +1,8 @@
 import styles from './GameBoard.module.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Values } from './utils/types';
 import Cell from './Cell';
-import { checkWinner, bestMove } from './utils/gameFunctions';
+import { checkWinner, getBlankSpaces, togglePlayer, minimax_alpha_beta } from './utils/gameFunctions';
 
 const GameBoard = () => {
   const [player, setPlayer] = useState<Values>(Values.x); // ['x', 'o']
@@ -23,38 +23,51 @@ const GameBoard = () => {
     setWinner(Values.empty);
   }
 
-  useEffect(() => {
-    const opponentMove = () => {
-      const newBoard = [...board];
-      const move = bestMove(newBoard, player);
-      newBoard[move.x][move.y] = player;
-      setBoard(newBoard);
-      const winner = checkWinner(board);
-      if (winner !== Values.empty) {
-        setWinner(winner);
-      } else {
-        setPlayer(Values.x);
+  const makeMove = (x: number, y: number, player: Values) => {
+    const newBoard = [...board];
+    newBoard[x][y] = player;
+    setBoard(newBoard);
+
+    // end turn if there is a winner, otherwise switch players
+    const newWinner = checkWinner(board);
+    if (newWinner !== Values.empty) {
+      setWinner(newWinner);
+    } else {
+      setPlayer(togglePlayer(player));
+    }
+  }
+
+  const opponentMove = () => {
+    const blankSpaces = getBlankSpaces(board);
+    let bestMove;
+    let bestScore = Infinity;
+    for (const move of blankSpaces) {
+      const childBoard = board.map(row => [...row]);
+      childBoard[move.x][move.y] = Values.o;
+      const score = minimax_alpha_beta(childBoard, 9, true);
+
+      if (score < bestScore) {
+        bestScore = score;
+        bestMove = move;
       }
     }
-
-    if (player === Values.o) {
-      opponentMove();
+    // make the best move
+    console.log('best move: ', bestMove);
+    if (bestMove) {
+      makeMove(bestMove.x, bestMove.y, Values.o);
+    } else {
+      console.log('no best move found');
     }
-  }, [board, player]);
+  }
 
   const handleClick = (x: number, y: number) => {
     if (board[x][y] !== Values.empty || winner !== Values.empty) {
       return;
     }
-    const newBoard = [...board];
-    newBoard[x][y] = player;
-    setBoard(newBoard);
-    const newWinner = checkWinner(board);
-    if (newWinner !== Values.empty) {
-      setWinner(newWinner);
-    } else {
-      setPlayer(Values.o);
-    }
+    makeMove(x, y, player);
+
+    // make opponent move
+    opponentMove();
   };
 
   return (
@@ -74,7 +87,11 @@ const GameBoard = () => {
       </div>
       <div className={styles.winner}>
         {winner !== Values.empty && (
-          <p>{winner} won!</p>
+          winner === Values.tie ? (
+            <p>It's a tie!</p>
+          ) : (
+            <p>{winner} won!</p>
+          )
         )}
       </div>
 
